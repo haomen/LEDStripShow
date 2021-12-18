@@ -9,14 +9,21 @@ void setup() {
 }
 
 void loop() {
-  for (int i = 0; i < 50; ++i) {
+  for (int i = 0; i < 20; ++i ) {
+    Splash();
+  }
+  for (int i = 0; i < 20; ++i) {
     MovingXMasStripe();
   }
-  delay(1000 * 60 * 5);
+  for (int i = 0; i < 3; ++i ) {
+    delay(60000); // 1min
+  }
   for (int i = 0; i < 1000; ++i) {
     RandomBlink();
   }
-  delay(1000 * 60 * 1);
+  for (int i = 0; i < 3; ++i ) {
+    delay(60000); // 1min
+  }
   for (int i = 0; i < 50; ++i) {
     FlyComet();
   }
@@ -26,6 +33,94 @@ void ResetStripe() {
   for (int i = 0; i < NUM_LEDS; ++i) {
     leds[i] = CRGB(0, 0, 0);
   }
+  FastLED.show();
+}
+
+void Splash() {
+  int star_len = 5;
+  // Initialize start from start ane end, move toward center.
+  for (int i = 0; i < NUM_LEDS / 2 - star_len + 1; ++i) {
+    Display2Star(i);
+    delay(10);
+  }
+  for (int i = 0; i < NUM_LEDS; ++i) {
+    leds[i] = CRGB(0, 0, 0);
+  }
+  leds[NUM_LEDS / 2] = CRGB(255, 255, 255);
+  leds[NUM_LEDS / 2 - 1] = CRGB(255, 255, 255);
+  FastLED.show();
+  delay(2000);
+
+  // Render stripe after star hit
+  AfterStarHit();
+
+  // After meet at center, splash and turn all on lights, from white dim to yellow
+  delay(500);
+  for (int i = 0; i < NUM_LEDS; ++i) {
+    leds[i] = CRGB(150, 150, 100);
+  }
+  FastLED.show();
+  delay(100);
+  for (int i = 0; i < NUM_LEDS; ++i) {
+    leds[i] = CRGB(150, 150, 50);
+  }
+  FastLED.show();
+  delay(200);
+  for (int i = 0; i < NUM_LEDS; ++i) {
+    leds[i] = CRGB(150, 150, 0);
+  }
+  FastLED.show();
+  delay(500);
+  for (int i = 0; i < NUM_LEDS; ++i) {
+    leds[i] = CRGB(50, 50, 0);
+  }
+  FastLED.show();
+  delay(3000);
+}
+
+void AfterStarHit() {
+  int mid = NUM_LEDS / 2;
+  int step_size = 5;
+  int i = 0;
+  int first_n = 3;
+  for (int i = 0; i < first_n; ++i) {
+    int offset = i * step_size;
+    for (int j = 0; j < step_size; ++j) {
+      leds[mid - 1 - offset - j] = CRGB(150, 150, 150);
+      leds[mid + offset + j] = CRGB(150, 150, 150);
+    }
+    FastLED.show();
+    delay(500);
+  }
+
+  while (i < mid) {
+    i += step_size;
+    for (int j = 0; j <= i; ++j) {
+      leds[mid - 1 - j] = CRGB(150, 150, 150);
+      leds[mid + j] = CRGB(150, 150, 150);
+    }
+    FastLED.show();
+    delay(50);
+  }
+}
+
+void Display2Star(int offset) {
+  // turn off all leds
+  for (int i = 0; i < NUM_LEDS; ++i) {
+    leds[i] = CRGB(0, 0, 0);
+  }
+  int star_len = 5;
+  // Star at head
+  for (int i = 0; i < star_len - 1; ++i) {
+    leds[i + offset] = CRGB(10 + i * 20, 5 + i * 15, 0);
+  }
+  leds[offset + star_len - 1] = CRGB(150, 150, 150);
+
+  // Star at tail
+  for (int i = 0; i < star_len - 1; ++i) {
+    leds[NUM_LEDS - 1 - offset - i] = CRGB(10 + i * 20, 5 + i * 15, 0);
+  }
+  leds[NUM_LEDS - 1 - offset - star_len + 1] = CRGB(150, 150, 150);
   FastLED.show();
 }
 
